@@ -6,15 +6,19 @@ class InitialValue(NamedTuple):
     value_type: type
 
 
-
-
 InitialState = dict[str, InitialValue]
 Param = InitialValue
 ParamSweep = Tuple[list[object], type]
 Parameters = dict[str, Union[Param, ParamSweep]]
 
 
-initial_state = {'a': InitialValue(0.0, float),
-                 'b': InitialValue(1.0, float)}
+initial_state = {'prey_count': InitialValue(100.0, float),
+                 'predator_count': InitialValue(10.0, float)}
 
-State = make_dataclass('State',  initial_state.items())
+def process_initial_state(initial_state: dict[str, InitialValue]) -> tuple[str, object]:
+    for key, initial_value in initial_state.items():
+        yield (key, initial_value[1])
+
+gen_expr = ((k, v[1]) for k, v in initial_state.items())
+State = make_dataclass('State',  gen_expr)
+
